@@ -9,6 +9,8 @@ based on the publication:
 > *Journal of Physics: Conference Series*, Vol. 3104, 012061 (2025).  
 > DOI: [10.1088/1742-6596/3104/1/012061](https://doi.org/10.1088/1742-6596/3104/1/012061)
 ![Example under different pressure](data/processed/animation.gif)
+> *Example: Comparison of the deformation behavior of the blank under different blankholder forces in the deep drawing simulation.*
+
 ---
 
 ## 📖 Overview
@@ -17,12 +19,12 @@ This dataset enables research on **automated tool design** using **generative ne
 It provides both **deep drawn part geometries** (input) and **active tool surfaces** (output)  
 for **dies** and **punches**, along with the associated process parameters.
 
-| Component | Description |
-|------------|-------------|
-| **Deep Drawn Parts** | 3D point clouds derived from LS-Dyna simulations |
-| **Tool Geometries** | Active surfaces of die and punch tools |
-| **Process Parameters** | Blankholder force and five geometric parameters |
-| **Simulation Metadata** | FE setup, material model, and part quality classification |
+| Component                | Description                                                                                                      | Function                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **Blank**                | The *workpiece* or *sheet metal* before forming. It is usually a flat circular or rectangular plate.             | Serves as the input material that will be plastically deformed into the desired shape. |
+| **Binder (Blankholder)** | A *clamping tool* that presses the blank’s edges against the die using a controlled **Blankholder Force (FBH)**. | Prevents wrinkling and regulates the material flow into the die cavity.                |
+| **Die**                  | The *female* part of the forming tool set, containing the cavity that defines the outer contour of the product.  | Provides the external surface geometry and supports the blank during forming.          |
+| **Punch**                | The *male* part of the forming tool set that moves downward into the die cavity.                                 | Forms the internal contour of the part by pushing the blank into the die.              |
 
 ---
 
@@ -53,8 +55,6 @@ Data was generated through an **automated FE-simulation workflow** combining
 | Bevel angle | α | 0 – 10 | ° | Conical wall inclination |
 | Blankholder force | FBH | 15 – 40 | kN | Process pressure |
 
-**Simulations performed:** 2,048  
-**Unique tool geometries:** 228  
 
 ---
 
@@ -64,16 +64,30 @@ Each dataset sample consists of:
 
 ```python
 {
-    "part": Tensor[N, 3],        # Deep drawn part (normalized)
-    "die": Tensor[N, 3],         # Die active surface
-    "punch": Tensor[N, 3],       # Punch active surface
-    "params": {
-        "R1": float,
-        "R2": float,
-        "h": float,
-        "c": float,
-        "alpha": float,
-        "FBH": float
-    },
-    "condition": [1, 0] or [0, 1]  # One-hot for die/punch
+  HDF5 File Overview
+============================================================
+Attributes:
+  Parameters = {radii2:20.0, radii1:5.0, delta:0.0, cr:1.1, height:25.0}
+  source_tag = tool_radii2_20_radii1_5_cr_1.1_delta_0_height_25
+
+binder/
+  node_coordinates            (N, 3)
+  element_shell_node_indexes  (M, 4)
+  element_shell_ids           (M,)
+
+blank/
+  Tiefgezogenes Bauteil_*     
+    node_coordinates          (N, 3)
+    element_shell_node_ids    (M, 4)
+    element_shell_thickness   (M,)
+
+die/
+  node_coordinates            (N, 3)
+  element_shell_node_indexes  (M, 4)
+  element_shell_ids           (M,)
+
+punch/
+  node_coordinates            (N, 3)
+  element_shell_node_indexes  (M, 4)
+  element_shell_ids           (M,)
 }
