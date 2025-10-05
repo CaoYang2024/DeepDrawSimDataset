@@ -1,127 +1,79 @@
-# ai-project-template
+# 🧠 DeepDrawing Dataset  
+*A Data-Driven Dataset for Automated Deep Drawing Tool Design*
 
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+This repository provides a dataset for **data-driven tool surface generation** in deep drawing,  
+based on the publication:
 
-This repository serves as an AI project template, offering a pre-configured GitHub repository structure with environment dependencies and sample code to help students quickly get started.
+> **M. Hohmann, A. Yiming, L. Penter, S. Ihlenfeldt, O. Niggemann**  
+> *A Data-Driven Approach for Automating the Design Process of Deep Drawing Tools*  
+> *Journal of Physics: Conference Series*, Vol. 3104, 012061 (2025).  
+> DOI: [10.1088/1742-6596/3104/1/012061](https://doi.org/10.1088/1742-6596/3104/1/012061)
+![Example under different pressure](data/processed/animation.gif)
+---
 
-## 🚀 Features Included
+## 📖 Overview
 
-- **Config Directory**: Centralized configuration files for the project.
-- **Data Directory**: Structured data management (raw, processed, and database data).
-- **Notebooks Directory**: Jupyter notebooks for data analysis and experiments.
-- **Results Directory**: Store experiment results, logs, and models.
-- **Source Code Directory**: Modularized source code for models, pipelines, utilities, schemas, and more.
-- **Tests Directory**: Unit and integration tests using `pytest`.
-- **[pre-commit](https://pre-commit.com/)**: Configuration for linting, type checking, and secret detection.
-- **[uv](https://docs.astral.sh/uv/)**: An extremely fast Python package and project manager
-- **[pyproject.toml](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/)**: Config for project, ruff linter, formatter, type checking, and testing.
+This dataset enables research on **automated tool design** using **generative neural networks**.  
+It provides both **deep drawn part geometries** (input) and **active tool surfaces** (output)  
+for **dies** and **punches**, along with the associated process parameters.
 
-> [!NOTE]
-> Not every element from this template is required for every project. Please adjust the repository structure and configuration files to fit your project's needs.
+| Component | Description |
+|------------|-------------|
+| **Deep Drawn Parts** | 3D point clouds derived from LS-Dyna simulations |
+| **Tool Geometries** | Active surfaces of die and punch tools |
+| **Process Parameters** | Blankholder force and five geometric parameters |
+| **Simulation Metadata** | FE setup, material model, and part quality classification |
 
 ---
 
-## 📁 Detailed Directory Breakdown
+## ⚙️ Data Generation Pipeline
 
-- **`/.github/`**: GitHub-specific configuration and workflows.
-  - `dependabot.yaml`: Configuration for Dependabot to automatically update dependencies.
+Data was generated through an **automated FE-simulation workflow** combining  
+[Gmsh](https://gmsh.info/) and **LS-Dyna**, with custom Python scripts for preprocessing.
 
-- **`/config/`**: Store all configuration files needed for your project.
-  - Example: `config.yaml` can be used for setting up hyperparameters, API keys, or other environment variables.
+**Workflow Summary**
+1. Parameterize tool geometry (R1, R2, h, c, α).
+2. Generate and mesh geometries using Gmsh.
+3. Run LS-Dyna forming simulations with varying `FBH`.
+4. Extract part meshes and tool surfaces.
+5. Convert results into `.xls`, `.pt`, or `.h5` for ML training.
 
-- **`/data/`**: Structured data folders for different stages of the project.
-  - `/raw/`: Raw data straight from the source.
-  - `/processed/`: Cleaned and preprocessed data ready for use in models.
-  - `/database/`: Database files if using local storage solutions.
-
-
-- **`/notebooks/`**: Jupyter notebooks for performing Exploratory Data Analysis (EDA), experimenting with models, and reporting.
-  - Example: `00_example.ipynb` shows how a notebook looks in the project.
-
-- **`/results/`**: Store experiment results, logs, and models.
-
-- **`/src/`**: Main source code for your project.
-  - `/constants/`: Store project-wide constants (e.g., file paths, API endpoints).
-  - `/models/`: Machine learning models (e.g., neural networks, decision trees) scripts, classes, and functions.
-  - `/schemas/`: Data schemas and validation logic (e.g., Pydantic models).
-  - `/pipelines/`: Data and model pipelines.
-  - `/utils/`: Utility functions and helpers (e.g., data loaders, preprocessing functions).
-  - `main.py`: Main execution script for the project.
-- **`/tests/`**: Unit and integration tests.
-
----
-
-## ⚙️ Configuration Files
-
-- **`.env`**: Store environment variables like API keys, database credentials, and sensitive information.
-
-- **`.gitignore`**: Standard [`.gitignore`](https://git-scm.com/docs/gitignore) file to exclude unnecessary files (e.g., environment files, data files).
-
-- **`.pre-commit-config.yaml`**: Configuration for [pre-commit](https://pre-commit.com/) hooks for linting, formatting, and type checking.
-
-
-- **`pyproject.toml`**: Configuration of the project, plus the configuration for formatting and linting. This file is used by [uv](https://docs.astral.sh/uv/) to manage the project and [ruff](https://docs.astral.sh/ruff/) for linting and formatting.
 
 
 ---
 
-## 🛠️ How to Use
+## 📊 Parameter Overview
 
-### 1. **Clone the Repository**
-```bash
-git clone https://github.com/username/ai-project-template.git
-cd ai-project-template
-```
+| Parameter | Symbol | Range | Unit | Description |
+|------------|---------|--------|------|-------------|
+| Corner radius | R1 | 5 – 8 | mm | Outer corner of die/punch |
+| Fillet radius | R2 | 20 – 55 | mm | Transition curvature |
+| Drawing depth | h | 25 – 50 | mm | Height of part cavity |
+| Clearance | c | 1.1 – 1.4 | mm | Gap between die & punch |
+| Bevel angle | α | 0 – 10 | ° | Conical wall inclination |
+| Blankholder force | FBH | 15 – 40 | kN | Process pressure |
 
-### 2a. **Install Default Dependencies** (includes ddacs)
-```bash
-uv sync --all-extras --dev
-```
-
-### 2b. **Install your Project Specific Dependencies**
-```bash
-uv add <package_name>
-```
+**Simulations performed:** 2,048  
+**Unique tool geometries:** 228  
 
 ---
 
-## 🗂️ Repository Structure
-```bash
+## 🧩 Data Format
 
-├── .github                   # GitHub Actions workflows and configuration
-│   ├── dependabot.yaml       # Dependabot configuration for automated dependency updates
-│   └── workflows             # CI/CD workflow definitions
-├── .venv                     # Virtual environment (created after installation)
-├── config                    # Configuration files for your project
-│   └── config.yaml           # Example configuration file
-├── data                      # Folder to store raw and processed data
-│   ├── database              # Databases or local data storage
-│   ├── processed             # Preprocessed/cleaned data
-│   └── raw                   # Raw data inputs
-├── notebooks                 # Jupyter notebooks for exploratory data analysis, experiments
-│   └── 00_example.ipynb      # Example notebook
-├── results                   # Folder to store the results of experiments and models
-├── src                       # Source code of your project
-│   ├── constants             # Constants used in the project
-│   │   └── __init__.py       # Package initialization file
-│   ├── models                # Machine learning model scripts
-│   │   └── __init__.py       # Package initialization file
-│   ├── pipelines             # ML pipelines for preprocessing and modeling
-│   │   └── __init__.py       # Package initialization file
-│   ├── schemas               # Data schemas and validation logic
-│   │   └── __init__.py       # Package initialization file
-│   ├── utils                 # Utility functions
-│   │   └── __init__.py       # Package initialization file
-│   └── main.py               # Main execution script
-├── tests                     # Unit and integration tests
-│   └── test_example.py       # Example test file using pytest
-├── .env                      # Environment variables file
-├── .gitignore                # Standard .gitignore file
-├── .pre-commit-config.yaml   # Configuration for pre-commit hooks
-├── pyproject.toml            # Configuration for formatting, linting, type-checking, and testing
-└── README.md                 # Documentation for the project (you're reading it!)
+Each dataset sample consists of:
 
-```
-
-
-
+```python
+{
+    "part": Tensor[N, 3],        # Deep drawn part (normalized)
+    "die": Tensor[N, 3],         # Die active surface
+    "punch": Tensor[N, 3],       # Punch active surface
+    "params": {
+        "R1": float,
+        "R2": float,
+        "h": float,
+        "c": float,
+        "alpha": float,
+        "FBH": float
+    },
+    "condition": [1, 0] or [0, 1]  # One-hot for die/punch
+}
