@@ -3,6 +3,7 @@ A lightweight dataset and utility toolkit for *Deep Drawing and Cutting Simulati
 It provides convenient APIs to map CSV → H5, load meshes (blank / binder / die / punch), manage multi-stage blanks, extract metadata, and visualize results.
 ---
 ## Features
+
 ### CSV-based file mapping
 Select samples using mapping.csv by any column such as id, new_id, orig_sim_id, or parameters like radii1, cr, height, etc.
 
@@ -27,7 +28,9 @@ visualize_blank(): color-coded blank mesh by thickness
 visualize_tool(): visualize binder, die, or punch mesh
 
 ### Robust handling
+
 Auto-detects CSV path column; if not found, generates filenames from id + zero_pad (e.g., data/001.h5).
+
 ---
 ## Processing Pipeline
 The DeepDrawSimDataset class wraps the typical preprocessing and management steps into a clean, ready-to-use API:
